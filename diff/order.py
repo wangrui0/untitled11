@@ -1,11 +1,9 @@
 # -*- coding:UTF-8 -*-
-import sys
 
-import requests
 import json
 import math
-from exportExcel import generate_excel
 
+import requests
 
 from diff.tiaofangzi import Tiaofangzi
 
@@ -68,10 +66,8 @@ class Shanghuzhongxin(object):
     # 获取页数
     def pageTotal(self):
 
-        totalsize = json.loads(self.getCenterOrderList(1))["pa" \
-                                                           "geResult"]["totalSize"]
+        totalsize = json.loads(self.getCenterOrderList(1))["pageResult"]["totalSize"]
         return math.ceil(float(totalsize) / 20)
-        print pagetotal
         # print type(json.loads(self.getCenterOrderList(1)))
         # print type(json.loads(self.getCenterOrderList(1))["pageResult"])
 
@@ -81,11 +77,11 @@ class Shanghuzhongxin(object):
 
     # 通过orderkey获取订单详情
     def get_orderinfo(self, orderkey):
-        request_data = {"service":"HTTP_SERVICE_URL_ORDER",
-                        "method":"/orderDetail",
-                        "data":{"orderKey":orderkey},
-                        "type":"post",
-                        "groupID":"1415"}
+        request_data = {"service": "HTTP_SERVICE_URL_ORDER",
+                        "method": "/orderDetail",
+                        "data": {"orderKey": orderkey},
+                        "type": "post",
+                        "groupID": "1415"}
         url = "http://vip.shop.hualala.com/api/v1/universal?getOrderDetail"
         headers = {
             "Origin": "http://vip.shop.hualala.com",
@@ -110,26 +106,30 @@ class Shanghuzhongxin(object):
         for x in shanghuzhongxin.getSHZXOrderList():
             for y in tiaofangzi.tiaofangzi_orderkey():
                 if "orderKey" in x.keys():
-                    print x
                     if x["orderKey"] == y["orderKey"]:
                         order = {}
                         order["orderKey"] = x["orderKey"]
                         # x1_payChannelAlias=shanghuzhongxin.get_orderinfo(json.dumps(x["orderKey"]))["orderMaster"]["payChannelAlias"]
-                        shanghuzhongxinPayType=shanghuzhongxin.get_orderinfo(json.dumps(x["orderKey"]))["orderMaster"]["payTypeAlias"]
+                        shanghuzhongxinPayType = \
+                        shanghuzhongxin.get_orderinfo(json.dumps(x["orderKey"]))["orderMaster"]["payTypeAlias"]
 
                         record = tiaofangzi.get_orderinfo(json.dumps(x["orderKey"]));
-                        if record or record["paymentDetailList"] == null:
+
+                        if not record:
+                            print("continue +1")
                             continue
 
+                        if not record["paymentDetailList"]:
+                            continue
 
-                        tiaofangziPayType=record["paymentDetailList"][0]["paymentSubjectName"]
+                        tiaofangziPayType = record["paymentDetailList"][0]["paymentSubjectName"]
                         if x["shopID"] != y["shopID"]:
                             order["shopID"] = "shagnhuzhohgnxin:" + x["shopID"] + ";tiaofangzi:" + y["shopID"]
 
-
-                        if shanghuzhongxinPayType !=tiaofangziPayType:
-                             order["shopOrderKey"] = "shagnhuzhohgnxin:" + x["shopOrderKey"] + ";tiaofangzi:" + y["shopOrderKey"]
-                             print order["shopOrderKey"]#     print x["shopName"]
+                        if shanghuzhongxinPayType != tiaofangziPayType:
+                            order["shopOrderKey"] = "shagnhuzhohgnxin:" + x["shopOrderKey"] + ";tiaofangzi:" + y[
+                                "shopOrderKey"]
+                            print(order["shopOrderKey"])  # print x["shopName"]
                         #
                         # if x["paidTotalAmount"] != y["paidTotalAmount"]:
                         #     print x["paidTotalAmount"]
@@ -143,7 +143,6 @@ class Shanghuzhongxin(object):
                         orderList.append(order)
         return orderList
 
-
     def getSHZXOrderList(self):
         contentDictList = []
         shanghuzhongxin = Shanghuzhongxin()
@@ -154,18 +153,15 @@ class Shanghuzhongxin(object):
             content = shanghuzhongxin.getCenterOrderList(currentPage)
             contentdict = json.loads(content)['data']
             contentDictList.extend(contentdict)
-            currentPage+=1
+            currentPage += 1
         return contentDictList
 
 
 if __name__ == '__main__':
     shanghuzhongxin = Shanghuzhongxin()
     # shanghuzhongxin.getShzxorderlist()
-    print shanghuzhongxin.getCenterOrderList(1)
     # print shanghuzhongxin.pageTotal()
     shanghuzhongxin.diffdata()
-    print shanghuzhongxin.get_orderinfo("6647716463694054101")
     # orderListResult = shanghuzhongxin.diffdata()
 
     # print orderListResult
-

@@ -17,9 +17,6 @@ def response_text():
     }
     param = json.dumps(request_data)
 
-    print param
     response=requests.post(url,data=param,headers=headers)
-    print response.text
 
 
-print response_text()

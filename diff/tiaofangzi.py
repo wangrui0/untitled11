@@ -32,7 +32,6 @@ class Tiaofangzi(object):
     #获取订单详情
     def get_orderinfo(self, orderkey):
         request_data = {"orderKey": orderkey}
-        print type(request_data)
         url = "http://www.tiaofangzi.com/cservice/order/queryOrderDetail"
         headers = {
             "Accept-Encoding": "gzip, deflate",
@@ -60,5 +59,4 @@ if __name__ == '__main__':
     # x = tiaofangzi.get_orderinfo("6646342727262807992")
     x = tiaofangzi.get_orderinfo("6646363239925942200")
     # u'6646363239925942200'
-    print
     # print tiaofangzi.tiaofangzi_orderkey()
